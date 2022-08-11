@@ -1,4 +1,4 @@
-class EntityNotFound < StandardError
+class EntityNotFound < EnumedateApiError
   def initialize(entity)
     @entity = entity
   end
@@ -21,3 +21,4 @@ class EntityNotFound < StandardError
       code: code
     }
   end
+end

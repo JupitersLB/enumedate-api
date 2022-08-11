@@ -24,16 +24,9 @@ class Token < ApplicationRecord
 
   def user_from_firebase_data
     return nil unless is_firebase_token?
-    puts "firebase data"
-    puts firebase_data
-
     (User.find_by(firebase_user_id: firebase_data['user_id']) if firebase_data['user_id']) or
       if email = (firebase_data['email'] || firebase_data.dig('firebase', 'identities', 'email')&.first)
-        puts "email is.............."
-        puts email
         user = User.find_by(email: email)
-        puts "user is .............."
-        puts user
         user
       end
   end

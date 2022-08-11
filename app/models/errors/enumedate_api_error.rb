@@ -1,0 +1,2 @@
+class EnumedateApiError < StandardError
+end

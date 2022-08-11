@@ -6,13 +6,15 @@ class ApplicationController < ActionController::API
 
   rescue_from Token::AccessDenied, with: :render_error_response
   rescue_from ActionController::ParameterMissing, with: :render_missing_param_error
+  rescue_from EnumedateApiError, 
+              with: :render_error_response
+
 
   private
 
   def check_token_exists
     authenticate_or_request_with_http_token do |token, _options|
-      @current_token = Token.find_by(value: token)  || Token.from_firebase_jwt(token)
-
+      @current_token = Token.find_by(value: token) || Token.from_firebase_jwt(token)
       raise Token::AccessDenied unless @current_token
 
       @current_token

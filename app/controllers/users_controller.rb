@@ -54,9 +54,6 @@ class UsersController < ApplicationController
            else
              current_login_user
            end
-
-    console.log('user: ', user)
-    
     raise EntityNotFound, 'User' unless user
 
     unless user.token

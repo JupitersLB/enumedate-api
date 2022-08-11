@@ -1,4 +1,4 @@
-class Token::AccessDenied < StandardError
+class Token::AccessDenied < EnumedateApiError
   def http_status
     401
   end

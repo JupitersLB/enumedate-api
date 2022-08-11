@@ -11,7 +11,8 @@ class User < ApplicationRecord
       email: email,
       lang: lang,
       time_unit: time_unit,
-      registered_user: registered_user
+      registered_user: registered_user,
+      created_at: created_at
     }
   end
 
