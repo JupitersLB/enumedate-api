@@ -8,14 +8,15 @@ class UsersController < ApplicationController
         end
         created.email = get_email_from_firebase_data
       end
-      return render json: user.to_h.merge({ token: { id: token.id, value: token.value } })
+      return render json: user.to_h.merge({ token: { id: user.token.id, value: user.token.value } })
     end
 
+    permitted = params.permit(:email, :name)
+    user = User.create!(permitted)
+    debugger
     return render nothing: true, status: 400 unless user.valid?
 
-    permitted = params.permit(:email, :name)
-
-    render json: User.create!(permitted).to_h.merge({ token: { id: token.id, value: token.value } })
+    render json: user.to_h.merge({ token: Token.create })
   rescue ActiveRecord::RecordNotUnique
     render json: { message: "Can't create user. Already exists" }, status: 403
   rescue ActiveRecord::ActiveRecordError, ActiveModel::ForbiddenAttributesError => e
@@ -25,7 +26,7 @@ class UsersController < ApplicationController
 
   def update
     user = User.find(params[:id])
-    user.update(params.permit(:name, :email))
+    user.update(params.permit(:name, :email, :lang, :time_unit))
 
     return render nothing: true, status: 400 unless user.valid?
 
@@ -53,6 +54,8 @@ class UsersController < ApplicationController
            else
              current_login_user
            end
+
+    console.log('user: ', user)
     
     raise EntityNotFound, 'User' unless user
 

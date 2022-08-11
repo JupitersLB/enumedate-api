@@ -10,11 +10,13 @@ class ApplicationController < ActionController::API
   private
 
   def check_token_exists
-    authenticate_or_request_with_http_token do |token, _options| 
+    authenticate_or_request_with_http_token do |token, _options|
       @current_token = Token.find_by(value: token)  || Token.from_firebase_jwt(token)
+
       raise Token::AccessDenied unless @current_token
 
       @current_token
+
     rescue JWT::DecodeError, JWT::ExpiredSignature => e
       raise Token::AccessDenied
     end

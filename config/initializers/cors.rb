@@ -5,12 +5,18 @@
 
 # Read more: https://github.com/cyu/rack-cors
 
-# Rails.application.config.middleware.insert_before 0, Rack::Cors do
-#   allow do
-#     origins 'example.com'
-#
-#     resource '*',
-#       headers: :any,
-#       methods: [:get, :post, :put, :patch, :delete, :options, :head]
-#   end
-# end
+if Rails.application.credentials.dig(:CORS_ORIGINS).present?
+  Rails.application.credentials.dig(:CORS_ORIGINS).each do |origin|
+    Rails.application.config.hosts << origin
+  end
+
+  Rails.application.config.middleware.insert_before 0, Rack::Cors do
+    allow do
+      origins Rails.application.credentials.dig(:CORS_ORIGINS)
+
+      resource '*',
+               headers: :any,
+               methods: %i[get post put patch delete options head]
+    end
+  end
+end
