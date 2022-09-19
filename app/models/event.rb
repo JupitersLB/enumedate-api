@@ -2,6 +2,7 @@ class Event < ApplicationRecord
   belongs_to :user
 
   validates :unit, inclusion: { in: %w[minutes hours days weeks months years] }, allow_blank: true
+  validates :start_date, presence: true
 
   def to_h
     {
