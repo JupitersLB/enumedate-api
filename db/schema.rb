@@ -10,11 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_11_053514) do
+ActiveRecord::Schema.define(version: 2022_09_18_005133) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "title"
+    t.datetime "start_date"
+    t.string "unit"
+    t.uuid "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_events_on_user_id"
+  end
 
   create_table "tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "value", null: false
@@ -36,4 +46,5 @@ ActiveRecord::Schema.define(version: 2022_08_11_053514) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "events", "users"
 end
