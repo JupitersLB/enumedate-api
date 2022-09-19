@@ -1,6 +1,10 @@
 class EventsController < ApplicationController
   include ParamsSupport
 
+  def index
+    render json: current_user.events.map(&:to_h), status: :ok
+  end
+
   def create
     if params[:start_date].present? && !iso8601_date?(params[:start_date])
       raise BadRequest,
@@ -14,7 +18,6 @@ class EventsController < ApplicationController
     else
       render json: event.errors, status: :unprocessable_entity
     end
-
   end
 
   private

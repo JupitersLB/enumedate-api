@@ -1,6 +1,8 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'database_cleaner/active_record'
 require 'spec_helper'
+require 'faker'
+
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
@@ -62,4 +64,8 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+  # If you do not include FactoryBot::Syntax::Methods in your test suite, 
+  # then all factory_bot methods will need to be prefaced with FactoryBot
+  # https://github.com/thoughtbot/factory_bot/blob/master/GETTING_STARTED.md#configure-your-test-suite
+  config.include FactoryBot::Syntax::Methods
 end

@@ -75,6 +75,13 @@ GEM
     diff-lcs (1.5.0)
     digest (3.1.0)
     erubi (1.11.0)
+    factory_bot (6.2.1)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.2.0)
+      factory_bot (~> 6.2.0)
+      railties (>= 5.0.0)
+    faker (2.23.0)
+      i18n (>= 1.8.11, < 2)
     faraday (1.10.1)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
@@ -232,6 +239,8 @@ DEPENDENCIES
   bootsnap (>= 1.4.4)
   byebug
   database_cleaner-active_record
+  factory_bot_rails
+  faker
   faraday (~> 1.3)
   faraday-http-cache (~> 2.2)
   faraday_middleware (~> 1.0)

@@ -87,4 +87,31 @@ RSpec.describe "Event API", type: :request do
       end
     end
   end
+
+  path '/events' do
+    get 'List of events' do
+      consumes 'application/json'
+      tags 'Events'
+      description 'Gets a list of events'
+      parameter name: 'Authorization', in: :header, type: :string
+
+      response '200', 'success' do
+        after do |example|
+          example.metadata[:response][:content] ||= { 'application/json': { 'examples': {} } }
+          example.metadata[:response][:content][:'application/json'][:examples][self.class.description] =
+            { value: JSON.parse(response.body, symbolize_names: true) }
+        end
+
+        let!(:event_1) { create(:event, user: current_user) }
+        let!(:event_2) { create(:event, user: current_user) }
+        let!(:event_3) { create(:event, user: current_user) }
+        
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data.count).to eq(3)
+          expect(data[1]['id']).to eq(event_2.id)
+        end
+      end
+    end
+  end
 end
