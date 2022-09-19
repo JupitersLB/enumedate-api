@@ -123,7 +123,7 @@ describe 'User API', type: :request do
       description "Update a users info."
 
       parameter name: :id, in: :path, type: :string
-      parameter name: 'Authorization', :in => :header, :type => :string
+      parameter name: 'Authorization', in: :header, type: :string
       parameter name: :user, in: :body, schema: {
         type: :object,
         properties: {

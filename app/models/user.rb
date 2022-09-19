@@ -2,7 +2,13 @@ class User < ApplicationRecord
   has_one :token, dependent: :destroy
   before_save :downcase_attrs, :check_registered_user
 
+  has_many :events
+
   validates :email, allow_blank: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :time_unit, inclusion: { in: %w[minutes hours days weeks months years] }
+  validates :lang, inclusion: { in: %w[en zh-hk] }
+
+
 
   def to_h
     {
