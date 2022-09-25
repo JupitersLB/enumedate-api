@@ -1,7 +1,7 @@
 class EventsController < ApplicationController
   include ParamsSupport
 
-  before_action :current_event, only: :show
+  before_action :current_event, only: %i[show update]
 
   def index
     render json: current_user.events.map(&:to_h), status: :ok
@@ -24,6 +24,21 @@ class EventsController < ApplicationController
     else
       render json: event.errors, status: :unprocessable_entity
     end
+  end
+
+  def update
+    if params[:start_date].present? && !iso8601_date?(params[:start_date])
+      raise BadRequest,
+            "Invalid date format (#{params[:start_date]}) format. Dates need to be in iso8601 format"
+    end
+
+    if current_event.update!(event_params)
+      render json: current_event.to_h
+    else
+      render json: current_event.errors, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { message: e.message, code: 'unprocessable_entity' }, status: :unprocessable_entity
   end
 
   private
