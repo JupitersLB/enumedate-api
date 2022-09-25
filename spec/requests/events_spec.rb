@@ -117,6 +117,74 @@ RSpec.describe "Event API", type: :request do
   end
 
   path '/events/{id}' do
+    put 'Update event info' do
+      consumes 'application/json'
+      tags 'Events'
+      description 'Update Event info.'
+      parameter name: 'Authorization', in: :header, type: :string
+      parameter name: :id, in: :path, type: :string
+      parameter name: :event, in: :body, schema: {
+        type: :object,
+        properties: {
+          start_date: { type: :string, example: '2020-07-20 12:30:00',
+                        description: 'Start date follows iso8601 format' },
+          unit: { type: :string, example: 'days' },
+          title: { type: :string, example: 'title for an event'},
+        }
+      }
+
+      response '200', 'success' do
+        after do |example|
+          example.metadata[:response][:content] ||= { 'application/json': { 'examples': {} } }
+          example.metadata[:response][:content][:'application/json'][:examples][self.class.description] =
+            { value: JSON.parse(response.body, symbolize_names: true) }
+        end
+
+        let(:event) { { title: 'title edit' } }
+
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          current_event.reload
+          p data
+          expect(data['title']).to eq(current_event.title)
+          expect(data['start_date']).to eq(current_event.start_date.iso8601(3))
+        end
+      end
+
+      response '400', 'Bad Request' do
+        context 'invalid start_date' do
+          let(:event) do
+            {
+              title: 'event 1',
+              start_date: 'incorrect date'
+            }
+          end
+
+          run_test!
+        end
+      end
+
+      response '404', 'not found' do
+        context 'Incorrect event id provided' do
+          let(:id) { 'incorrect-id' }
+          let(:event) { { title: 'new event'} }
+
+          run_test!
+        end
+      end
+
+      response '401', 'Invalid Token' do
+        context 'Invalid token' do
+          let(:Authorization) { 'Bearer 69420' }
+          let(:event) { { title: 'title edit' } }
+
+          run_test!
+        end
+      end
+    end
+  end
+
+  path '/events/{id}' do
     get 'Event info' do
       consumes 'application/json'
       tags 'Events'
