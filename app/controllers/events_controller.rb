@@ -1,8 +1,14 @@
 class EventsController < ApplicationController
   include ParamsSupport
 
+  before_action :current_event, only: :show
+
   def index
     render json: current_user.events.map(&:to_h), status: :ok
+  end
+
+  def show
+    render json: current_event.to_h, status: :ok
   end
 
   def create
@@ -30,6 +36,12 @@ class EventsController < ApplicationController
 
   def current_user
     current_token.user
+  end
+
+  def current_event
+    @event = Event.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    raise EntityNotFound, Event
   end
 
 end
