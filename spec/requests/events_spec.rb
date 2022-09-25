@@ -4,6 +4,7 @@ RSpec.describe "Event API", type: :request do
   let(:current_token) { Token.create }
   let(:current_user) { User.find_or_create_by(name: 'test', email: 'test@test.com', token: current_token)}
   let(:current_event) { create :event, title: 'Got Married', start_date: DateTime.new(2020, 07, 20, 12, 30), user: current_user}
+  let(:id) { current_event.id }
   let(:Authorization) { "Bearer #{current_user.token.value}"}
 
   RSpec.shared_examples 'successful post request' do
@@ -110,6 +111,37 @@ RSpec.describe "Event API", type: :request do
           data = JSON.parse(response.body)
           expect(data.count).to eq(3)
           expect(data[1]['id']).to eq(event_2.id)
+        end
+      end
+    end
+  end
+
+  path '/events/{id}' do
+    get 'Event info' do
+      consumes 'application/json'
+      tags 'Events'
+      description 'Get event info'
+      parameter name: 'Authorization', in: :header, type: :string
+      parameter name: :id, in: :path, type: :string
+
+      response '200', 'success' do
+        after do |example|
+          example.metadata[:response][:content] ||= { 'application/json': { 'examples': {} } }
+          example.metadata[:response][:content][:'application/json'][:examples][self.class.description] =
+            { value: JSON.parse(response.body, symbolize_names: true) }
+        end
+
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data['title']).to eq(current_event.title)
+        end
+      end
+
+      response '404', 'not found' do
+        context 'Incorrect event id provided' do
+          let(:id) { '69420' }
+
+          run_test!
         end
       end
     end
