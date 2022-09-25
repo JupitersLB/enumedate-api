@@ -185,6 +185,41 @@ RSpec.describe "Event API", type: :request do
   end
 
   path '/events/{id}' do
+    delete 'Delete an event' do
+      consumes 'application/json'
+      tags 'Events'
+      description 'Delete events.'
+      parameter name: 'Authorization', in: :header, type: :string
+      parameter name: :id, in: :path, type: :string
+
+      response 200, 'success' do
+        after do |example|
+          example.metadata[:response][:content] ||= { 'application/json': { 'examples': {} } }
+          example.metadata[:response][:content][:'application/json'][:examples][self.class.description] =
+            { value: JSON.parse(response.body, symbolize_names: true) }
+        end
+
+        run_test! do |_response|
+          expect { Event.find(id) }.to raise_exception(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      response '401', 'Invalid Token' do
+        after do |example|
+          example.metadata[:response][:content] ||= { 'application/json': { 'examples': {} } }
+          example.metadata[:response][:content][:'application/json'][:examples][self.class.description] =
+            { value: JSON.parse(response.body, symbolize_names: true) }
+        end
+        context 'invalid auth provided' do
+          let(:Authorization) { 'Bearer 69420' }
+
+          run_test!
+        end
+      end
+    end
+  end
+
+  path '/events/{id}' do
     get 'Event info' do
       consumes 'application/json'
       tags 'Events'
