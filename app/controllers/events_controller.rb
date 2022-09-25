@@ -1,7 +1,7 @@
 class EventsController < ApplicationController
   include ParamsSupport
 
-  before_action :current_event, only: %i[show update]
+  before_action :current_event, only: %i[show update destroy]
 
   def index
     render json: current_user.events.map(&:to_h), status: :ok
@@ -39,6 +39,13 @@ class EventsController < ApplicationController
     end
   rescue ActiveRecord::RecordInvalid => e
     render json: { message: e.message, code: 'unprocessable_entity' }, status: :unprocessable_entity
+  end
+
+  def destroy
+    current_event.destroy!
+    render json: { message: 'success' }, status: :ok
+  rescue ActiveRecord::RecordNotDestroyed
+    raise EntityDeletionError, current_event
   end
 
   private
