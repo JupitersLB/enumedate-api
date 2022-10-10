@@ -8,8 +8,6 @@ class User < ApplicationRecord
   validates :time_unit, inclusion: { in: %w[minutes hours days weeks months years] }
   validates :lang, inclusion: { in: %w[en zh-hk] }
 
-
-
   def to_h
     {
       id: id,
@@ -20,6 +18,11 @@ class User < ApplicationRecord
       registered_user: registered_user,
       created_at: created_at
     }
+  end
+
+  def delete_account!
+    assign_attributes(deleted_at: DateTime.now, disabled: true)
+    save
   end
 
   private

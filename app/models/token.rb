@@ -26,7 +26,7 @@ class Token < ApplicationRecord
     return nil unless is_firebase_token?
     (User.find_by(firebase_user_id: firebase_data['user_id']) if firebase_data['user_id']) or
       if email = (firebase_data['email'] || firebase_data.dig('firebase', 'identities', 'email')&.first)
-        user = User.find_by(email: email)
+        user = User.find_by(email: email, disabled: false)
         user
       end
   end

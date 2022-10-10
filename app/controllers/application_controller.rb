@@ -21,6 +21,11 @@ class ApplicationController < ActionController::API
     rescue JWT::DecodeError, JWT::ExpiredSignature => e
       raise Token::AccessDenied
     end
+    if @current_token.user && @current_token.user.disabled?
+      raise UserDisabled, 'User disabled'
+    end
+
+
   end
 
   def render_missing_param_error(exception)

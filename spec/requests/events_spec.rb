@@ -145,7 +145,6 @@ RSpec.describe "Event API", type: :request do
         run_test! do |response|
           data = JSON.parse(response.body)
           current_event.reload
-          p data
           expect(data['title']).to eq(current_event.title)
           expect(data['start_date']).to eq(current_event.start_date.iso8601(3))
         end

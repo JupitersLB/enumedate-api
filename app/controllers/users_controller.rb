@@ -10,6 +10,7 @@ class UsersController < ApplicationController
       end
       return render json: user.to_h.merge({ token: { id: user.token.id, value: user.token.value } })
     end
+    raise UserDisabled, 'User disabled' if u.disabled
 
     permitted = params.permit(:email, :name)
     user = User.create!(permitted)
@@ -35,12 +36,6 @@ class UsersController < ApplicationController
     render json: { message: "Can't update User" }, status: 403
   end
 
-  def destroy
-    user = User.find(params[:id])
-    user.destroy!
-    render json: { message: 'success' }, status: :ok
-  end
-
   def show
     @user = User.find(params[:id])
     render json: @user.to_h, status: :ok
@@ -55,6 +50,7 @@ class UsersController < ApplicationController
              current_login_user
            end
     raise EntityNotFound, 'User' unless user
+    raise UserDisabled, 'User disabled' if user.disabled
 
     unless user.token
       token = Token.create
@@ -62,6 +58,11 @@ class UsersController < ApplicationController
     end
 
     render json: user.to_h.merge({ token: { id: user.token.id, value: user.token.value } })
+  end
+
+  def delete_account
+    current_login_user.delete_account!
+    render json: { message: 'success' }, status: :ok
   end
 
   private
